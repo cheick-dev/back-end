@@ -5,7 +5,7 @@ require("./config");
 const { Utilisateur } = require("./user");
 const { Register } = require("./register");
 app.get("/", async (req, res)=> {
-	res.json({"hello"})
+	res.json({message: "hello"})
 })
 app.get("/posts/:nom/:email/:numero", async (req, res) => {
 	const { nom, email, numero } = req.params;
