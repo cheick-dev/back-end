@@ -6,6 +6,10 @@ const port = 3000;
 const Users = [];
 const Dates = [];
 
+app.get("/", (req, res)=> {
+	res.json({message: "hello"})
+})
+
 app.get("/users", (req, res)=> {
 	res.json({Users})
 })
