@@ -11,28 +11,32 @@ app.use((req, res, next) => {
     next();
   });
 
-const Users = [];
-const Dates = [];
 
-app.get("/", (req, res)=> {
-	res.json({message: "hello"})
-})
+const Users = [
+	// {
+	// 	nom: "toto",
+	// 	email: "toto1010@gmail.com",
+	// 	numero: "0123456789",
+	// 	dates: [],
+	// },
+];
 
-app.get("/users", (req, res)=> {
-	res.json({Users})
-})
-app.get("/dates", (req, res)=> {
-	res.json({Dates})
-})
+app.get("/users", (req, res) => {
+	res.json(Users);
+});
+// app.get("/dates", (req, res) => {
+// 	res.json({ Dates: Users.d });
+// });
 
 app.get("/posts/:nom/:email/:numero", async (req, res) => {
 	const { nom, email, numero } = req.params;
-
+	const dates = [];
 	if ((nom, email, numero)) {
 		const user = Users.filter((el) => el.email === email);
 
 		if (user.length === 0) {
-			Users.push({ nom, email, numero });
+			Users.push({ nom, email, numero, dates });
+			console.log(Users);
 			return res.json({ Users, status: "ok" });
 		}
 		return res.json({
@@ -58,22 +62,17 @@ app.get("/scanner/:userEmail", async (req, res) => {
 		};
 		const dateEtHeureEnChaine = date.toLocaleString("fr-FR", options);
 		const user = Users.filter((el) => el.email === userEmail);
-		const prev = Dates.filter((el) => el.userEmail === userEmail);
-		console.log(prev[0].dates);
-		if (user.length === 0) {
-			Dates.push({
-				userEmail: userEmail,
-				dates: [...prev[0].dates, dateEtHeureEnChaine],
-			});
-			console.log("1", Dates);
-			return res.json({ message: "Eregistrement effectuer avec succes", status: "ok" })
-		} else {
-			const date = Dates.filter((el) => el.userEmail === userEmail);
-			date[0].dates = [...prev[0].dates, dateEtHeureEnChaine]
-			console.log("2", Dates);
-			return res.json({ message: "Eregistrement effectuer avec succes", status: "ok" })
-		}
 
+		if (user.length === 0) {
+			return res.json({ message: "User is not found", status: "err" });
+		} else {
+			console.log(user[0].dates);
+			user[0].dates = [...user[0].dates, dateEtHeureEnChaine];
+			return res.json({
+				message: "Eregistrement effectuer avec succes",
+				status: "ok",
+			});
+		}
 	}
 });
 
