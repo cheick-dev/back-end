@@ -25,7 +25,7 @@ let myStatus = "null";
 app.post("/webhook", (request, response) => {
 	const sig = request.headers["x-fedapay-signature"];
 
-	// console.log(request.body);
+	console.log(request.body);
 
 	let event;
 
@@ -57,7 +57,7 @@ app.post("/webhook", (request, response) => {
 	}
 
 	// Répondez pour confirmer la réception de l'événement
-	response.json({ received: true, body: request.body });
+	response.json({ received: true });
 });
 
 const Users = [
