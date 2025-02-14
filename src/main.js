@@ -2,7 +2,7 @@ import { Client, Storage } from 'node-appwrite';
 import mammoth from 'mammoth';
 import xlsx from 'xlsx';
 import path from 'path';
-import { convertHtmlToPdf } from './convertToPdf';
+import { convertExcelToHtml, convertHtmlToPdf } from './convertToPdf';
 
 // Fonction déclenchée par Appwrite (via webhook ou trigger)
 export default async ({ req, res, log, error }) => {
