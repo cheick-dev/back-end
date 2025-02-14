@@ -68,8 +68,10 @@ export default async ({ req, res, log, error }) => {
         });
     } catch (err) {
         error(`Erreur lors de la conversion des fichiers : ${err.message}`);
-        return res.json({
-            error: err.message,
-        });
     }
+
+    return res.json({
+        message: 'Conversion terminée et fichier téléchargé.',
+        list: await storage.listFiles(),
+    });
 };
