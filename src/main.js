@@ -1,8 +1,8 @@
 import { Client, Storage } from 'node-appwrite';
 import mammoth from 'mammoth';
+import puppeteer from 'puppeteer';
 import xlsx from 'xlsx';
 import path from 'path';
-import { convertExcelToHtml, convertHtmlToPdf } from './convertToPdf';
 
 // Fonction déclenchée par Appwrite (via webhook ou trigger)
 export default async ({ req, res, log, error }) => {
@@ -72,59 +72,32 @@ export default async ({ req, res, log, error }) => {
 
     return res.json({ data: 'ok' });
 };
+export const convertHtmlToPdf = async (htmlContent) => {
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+    await page.setContent(htmlContent);
+    const pdfBuffer = await page.pdf();
+    await browser.close();
+    return pdfBuffer;
+};
 
-// import { Client, Storage, InputFile } from 'node-appwrite';
+// Fonction pour convertir les données Excel en HTML
+export const convertExcelToHtml = (sheetData) => {
+    let htmlContent = "<table border='1'>";
+    // Générer l'en-tête du tableau
+    const headers = Object.keys(sheetData[0]);
+    htmlContent +=
+        '<tr>' +
+        headers.map((header) => `<th>${header}</th>`).join('') +
+        '</tr>';
 
-// module.exports = async (context) => {
-//   try {
-//     const client = new Client()
-//       .setEndpoint(context.env.APPWRITE_ENDPOINT)
-//       .setProject(context.env.APPWRITE_PROJECT_ID)
-//       .setKey(context.env.APPWRITE_API_KEY);
-
-//     const storage = new Storage(client);
-//     const data = JSON.parse(context.req.body);
-
-//     let result;
-
-//     switch (data.action) {
-//       case 'list':
-//         result = await storage.listFiles(data.bucketId);
-//         break;
-
-//       case 'create':
-//         const file = InputFile.fromBuffer(
-//           Buffer.from(data.fileContent),
-//           data.fileName
-//         );
-//         result = await storage.createFile(
-//           data.bucketId,
-//           file,
-//           data.permissions
-//         );
-//         break;
-
-//       case 'delete':
-//         result = await storage.deleteFile(data.bucketId, data.fileId);
-//         break;
-
-//       case 'getFile':
-//         result = await storage.getFile(data.bucketId, data.fileId);
-//         break;
-
-//       default:
-//         throw new Error('Action non valide');
-//     }
-
-//     return context.res.json({
-//       success: true,
-//       data: result
-//     });
-
-//   } catch (error) {
-//     return context.res.json({
-//       success: false,
-//       error: error.message
-//     });
-//   }
-// };
+    // Remplir les lignes de données
+    sheetData.forEach((row) => {
+        htmlContent +=
+            '<tr>' +
+            headers.map((header) => `<td>${row[header]}</td>`).join('') +
+            '</tr>';
+    });
+    htmlContent += '</table>';
+    return htmlContent;
+};
