@@ -1,4 +1,4 @@
-import { Client, Storage, Users } from 'node-appwrite';
+import { Client, Storage } from 'node-appwrite';
 import mammoth from 'mammoth';
 import xlsx from 'xlsx';
 import path from 'path';
@@ -13,17 +13,6 @@ export default async ({ req, res, log, error }) => {
         .setKey(req.headers['x-appwrite-key'] ?? ''); // Clé d'API Appwrite
 
     const storage = new Storage(client);
-    // const users = new Users(client);
-    // // const list = await storage.listFiles('67a77cd8000fe5cee78c');
-    // const data = { list: null, users: null };
-    // try {
-    //     data['list'] = await storage.listFiles('67a77cd8000fe5cee78c');
-    //     data['users'] = await users.list();
-    // } catch (error) {
-    //     data['list'] = JSON.stringify(error);
-    //     data['users'] = JSON.stringify(error);
-    //     log(error);
-    // }
 
     try {
         // Récupération des informations sur le fichier uploadé
