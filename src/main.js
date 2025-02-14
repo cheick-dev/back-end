@@ -1,35 +1,34 @@
-import { Client, Users } from 'node-appwrite';
+import { Client, Storage } from 'node-appwrite';
+import { convertToPdf } from './convertToPdf'; // Supposons que cette fonctionnalité soit implémentée dans un fichier séparé
 
-// This Appwrite function will be executed every time your function is triggered
+// Cette fonction Appwrite sera exécutée chaque fois que votre fonction est déclenchée
 export default async ({ req, res, log, error }) => {
-  // You can use the Appwrite SDK to interact with other services
-  // For this example, we're using the Users service
-  const client = new Client()
-    .setEndpoint(process.env.APPWRITE_FUNCTION_API_ENDPOINT)
-    .setProject(process.env.APPWRITE_FUNCTION_PROJECT_ID)
-    .setKey(req.headers['x-appwrite-key'] ?? '');
-  const users = new Users(client);
+    // Vous pouvez utiliser le SDK Appwrite pour interagir avec d'autres services
+    // Pour cet exemple, nous utilisons le service de stockage
+    const client = new Client()
+        .setEndpoint(process.env.APPWRITE_FUNCTION_API_ENDPOINT)
+        .setProject(process.env.APPWRITE_FUNCTION_PROJECT_ID)
+        .setKey(req.headers['x-appwrite-key'] ?? '');
+    const storage = new Storage(client);
 
-  try {
-    const response = await users.list();
-    // Log messages and errors to the Appwrite Console
-    // These logs won't be seen by your end users
-    log(`Total users: ${response.total}`);
-  } catch(err) {
-    error("Could not list users: " + err.message);
-  }
+    try {
+        // Supposons que nous ayons une fonction pour lister les fichiers du stockage
+        const files = await storage.listFiles();
+        for (const file of files) {
+            // Vérifiez si le fichier est déjà au format PDF
+            if (file.mimeType !== 'application/pdf') {
+                // Convertissez le fichier au format PDF
+                await convertToPdf(file.id, file.mimeType);
+                log(`Le fichier ${file.name} a été converti au format PDF`);
+            }
+        }
+    } catch (err) {
+        error(
+            'Impossible de convertir les fichiers au format PDF: ' + err.message
+        );
+    }
 
-  // The req object contains the request data
-  if (req.path === "/ping") {
-    // Use res object to respond with text(), json(), or binary()
-    // Don't forget to return a response!
-    return res.text("Pong");
-  }
-
-  return res.json({
-    motto: "Build like a team of hundreds_",
-    learn: "https://appwrite.io/docs",
-    connect: "https://appwrite.io/discord",
-    getInspired: "https://builtwith.appwrite.io",
-  });
+    return res.json({
+        message: 'Impossible de convertir les fichiers au format PDFF',
+    });
 };
